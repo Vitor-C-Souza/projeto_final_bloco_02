@@ -1,6 +1,7 @@
 package br.com.vitorcsouza.farmacia.controller;
 
 import br.com.vitorcsouza.farmacia.model.Produto;
+import br.com.vitorcsouza.farmacia.repository.CategoriaRepository;
 import br.com.vitorcsouza.farmacia.repository.ProdutoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,14 @@ import java.util.NoSuchElementException;
 public class ProdutoController {
     @Autowired
     private ProdutoRepository repository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     @PostMapping
     public ResponseEntity<Produto> create(@RequestBody @Valid Produto produto, UriComponentsBuilder uri) {
+        if (!categoriaRepository.existsById(produto.getCategoria().getId())) {
+            throw new NoSuchElementException("Não foi encontrado a categoria do id");
+        }
         repository.save(produto);
         URI address = uri.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
         return ResponseEntity.created(address).body(produto);
@@ -48,6 +54,9 @@ public class ProdutoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Produto> put(@PathVariable Long id, @RequestBody @Valid Produto produto) {
+        if (!categoriaRepository.existsById(produto.getCategoria().getId())) {
+            throw new NoSuchElementException("Não foi encontrado a categoria do id");
+        }
         Produto reference = repository.getReferenceById(id);
         reference.update(produto);
         return ResponseEntity.ok(repository.save(reference));
