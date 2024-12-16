@@ -5,12 +5,14 @@ import br.com.vitorcsouza.farmacia.repository.CategoriaRepository;
 import br.com.vitorcsouza.farmacia.repository.ProdutoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -34,8 +36,8 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> findAll() {
-        List<Produto> produtos = repository.findAll();
+    public ResponseEntity<Page<Produto>> findAll(@PageableDefault Pageable pageable) {
+        Page<Produto> produtos = repository.findAll(pageable);
         return ResponseEntity.ok(produtos);
     }
 
@@ -47,8 +49,8 @@ public class ProdutoController {
     }
 
     @GetMapping("/pesquisar")
-    public ResponseEntity<List<Produto>> GetByNome(@RequestParam String nome) {
-        List<Produto> produtos = repository.findAllByNomeContainingIgnoreCase(nome);
+    public ResponseEntity<Page<Produto>> GetByNome(@RequestParam String nome, @PageableDefault Pageable pageable) {
+        Page<Produto> produtos = repository.findAllByNomeContainingIgnoreCase(nome, pageable);
 
         return ResponseEntity.ok(produtos);
     }

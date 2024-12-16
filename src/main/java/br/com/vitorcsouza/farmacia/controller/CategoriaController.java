@@ -4,12 +4,14 @@ import br.com.vitorcsouza.farmacia.model.Categoria;
 import br.com.vitorcsouza.farmacia.repository.CategoriaRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -27,8 +29,8 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Categoria>> findAll() {
-        List<Categoria> categorias = repository.findAll();
+    public ResponseEntity<Page<Categoria>> findAll(@PageableDefault Pageable pageable) {
+        Page<Categoria> categorias = repository.findAll(pageable);
         return ResponseEntity.ok(categorias);
     }
 
@@ -40,8 +42,8 @@ public class CategoriaController {
     }
 
     @GetMapping("/pesquisar")
-    public ResponseEntity<List<Categoria>> GetByNome(@RequestParam String nome) {
-        List<Categoria> categorias = repository.findAllByNomeContainingIgnoreCase(nome);
+    public ResponseEntity<Page<Categoria>> GetByNome(@RequestParam String nome, @PageableDefault Pageable pageable) {
+        Page<Categoria> categorias = repository.findAllByNomeContainingIgnoreCase(nome, pageable);
 
         return ResponseEntity.ok(categorias);
     }
