@@ -1,5 +1,6 @@
 package br.com.vitorcsouza.farmacia.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,12 +25,16 @@ public class Produto {
     @NotNull(message = "O campo estoque não pode estar vazio!")
     private int estoque;
 
+    @ManyToOne
+    @JsonIgnoreProperties("produtos")
+    private Categoria categoria;
 
     public void update(@Valid Produto produto) {
         this.nome = produto.getNome();
         this.descricao = produto.getDescricao();
         this.preco = produto.getPreco();
         this.estoque = produto.getEstoque();
+        this.categoria = produto.getCategoria();
     }
 
     public Long getId() {
@@ -70,5 +75,13 @@ public class Produto {
 
     public void setEstoque(int estoque) {
         this.estoque = estoque;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }

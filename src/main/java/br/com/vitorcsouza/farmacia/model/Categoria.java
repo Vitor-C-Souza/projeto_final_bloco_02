@@ -1,9 +1,12 @@
 package br.com.vitorcsouza.farmacia.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 @Entity
 @Table(name = "tb_categorias")
@@ -17,6 +20,10 @@ public class Categoria {
     @NotBlank(message = "O campo descrição não pode estar em branco!")
     @NotNull(message = "O campo descrição não pode estar vazio!")
     private String descricao;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "categoria", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties("categoria")
+    private List<Produto> produtos;
 
     public void update(@Valid Categoria categoria) {
         this.nome = categoria.getNome();
@@ -45,5 +52,13 @@ public class Categoria {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 }
