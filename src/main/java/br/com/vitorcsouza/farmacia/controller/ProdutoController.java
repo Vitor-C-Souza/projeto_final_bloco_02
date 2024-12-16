@@ -24,12 +24,13 @@ public class ProdutoController {
 
     @PostMapping
     public ResponseEntity<Produto> create(@RequestBody @Valid Produto produto, UriComponentsBuilder uri) {
-        if (!categoriaRepository.existsById(produto.getCategoria().getId())) {
-            throw new NoSuchElementException("Não foi encontrado a categoria do id");
+        if (categoriaRepository.existsById(produto.getCategoria().getId())) {
+            repository.save(produto);
+            URI address = uri.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
+            return ResponseEntity.created(address).body(produto);
+        } else {
+            throw new NoSuchElementException();
         }
-        repository.save(produto);
-        URI address = uri.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
-        return ResponseEntity.created(address).body(produto);
     }
 
     @GetMapping
@@ -54,12 +55,13 @@ public class ProdutoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Produto> put(@PathVariable Long id, @RequestBody @Valid Produto produto) {
-        if (!categoriaRepository.existsById(produto.getCategoria().getId())) {
-            throw new NoSuchElementException("Não foi encontrado a categoria do id");
+        if (categoriaRepository.existsById(produto.getCategoria().getId())) {
+            Produto reference = repository.getReferenceById(id);
+            reference.update(produto);
+            return ResponseEntity.ok(repository.save(reference));
+        } else {
+            throw new NoSuchElementException("");
         }
-        Produto reference = repository.getReferenceById(id);
-        reference.update(produto);
-        return ResponseEntity.ok(repository.save(reference));
     }
 
     @DeleteMapping("/{id}")
